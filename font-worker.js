@@ -20,16 +20,10 @@ const SVG_FONT_TEMPLATE = _.template(
 
 _.forEach(
   {
-    'demo.pug': 'demo.html',
-    'css/css.pug': 'css/${FONTNAME}.css',
-    'css/css-ie7.pug': 'css/${FONTNAME}-ie7.css',
-    'css/css-codes.pug': 'css/${FONTNAME}-codes.css',
-    'css/scss-codes.pug': 'css/${FONTNAME}-codes.scss',
-    'css/css-ie7-codes.pug': 'css/${FONTNAME}-ie7-codes.css',
-    'css/css-embedded.pug': 'css/${FONTNAME}-embedded.css',
-    'LICENSE.pug': 'LICENSE.txt',
-    'css/animation.css': 'css/animation.css',
-    'README.txt': 'README.txt'
+    'demo.pug': 'font-icons-preview.html',
+    'list.pug': 'font-icons-list.csv',
+    'css/base.pug': 'css/${FONTNAME}-base.css',
+    'css/codes.pug': 'css/${FONTNAME}-codes.css'
   },
   (outputName, inputName) => {
     const inputFile = path.join(TEMPLATES_DIR, inputName);

@@ -1,0 +1,9 @@
+- var i, g, css_class, code
+- function pad(s) { return s.length === 3 ? '0' + s : s; }
+- for (i in glyphs)
+  - g = glyphs[i]
+  - if( g.duo ) continue
+  - css_class = meta.css_use_suffix ? g.css + meta.css_prefix_text : meta.css_prefix_text + g.css
+  - code = pad(g.code.toString(16))
+  | #{css_class}, #{code}
+  != '\n'

@@ -1,14 +1,14 @@
 {
-  "name": "fontello-offline-cli",
-  "version": "7.0.0",
-  "description": "Offline command line interface for Fontello.",
-  "main": "fontello-offline-cli.js",
+  "name": "icon-font-generator-cli",
+  "version": "0.1.0",
+  "description": "fontello based icon font generator cli",
+  "main": "fg.js",
   "bin": {
-    "fontello-offline-cli": "fontello-offline-cli.js"
+    "fontello-offline-cli": "fg.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luchenatwork/Fontello-Offline-CLI.git"
+    "url": "git+https://git@github.com:ArtCraft/Icon-Font-Generator-CLI.git"
   },
   "keywords": [
     "svg",
@@ -19,12 +19,9 @@
     "font",
     "icon"
   ],
-  "author": "Chen Lu",
+  "author": "ArtCraft",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/luchenatwork/Fontello-Offline-CLI/issues"
-  },
-  "homepage": "https://github.com/luchenatwork/Fontello-Offline-CLI#readme",
+  "homepage": "https://github.com/ArtCraft/Icon-Font-Generator-CLI",
   "dependencies": {
     "argparse": "^1.0.10",
     "base64-js": "^1.3.1",
