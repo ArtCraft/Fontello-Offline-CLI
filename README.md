@@ -10,5 +10,5 @@ Forked from [Fontello-Offline-CLI](https://github.com/luchenatwork/Fontello-Offl
 ```
 $ node fg --help
 $ node fg --version
-$ node fg -p "src/path" -n thefontname -a "font author" -o "output/path"
+$ node fg -s "src/path" -n thefontname -a "font author" -o "output/path"
 ```

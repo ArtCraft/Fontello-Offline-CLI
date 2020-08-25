@@ -3,9 +3,8 @@
 - if (need_charset)
   | @charset "UTF-8";
   != '\n'
-  != '\n'
   | 
-
+//TODO use same css as google-fonts / material icons does
 - var rnd = Math.floor(Math.random()*100000000);
 | @font-face {
 |   font-family: '#{font.fontname}';
@@ -29,14 +28,12 @@
 |   font-size: 48px;
 | 
 |   display: inline-block;
-|   text-decoration: inherit;
+|   text-decoration: none;
 |   width: 1em;
+|   line-height: 1em;
 |   text-align: center;
-| 
-|   /* For safety - reset parent styles, that can break glyph codes*/
 |   font-variant: normal;
 |   text-transform: none;
-|   line-height: 1em;
 |
 |   /* Font smoothing. That was taken from TWBS */
 |   -webkit-font-smoothing: antialiased;

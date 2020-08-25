@@ -27,6 +27,8 @@ html
 
   body
     .container
+      - var data = JSON.stringify(font, null, 2)
+      pre #{data}
       header
         h1 #{font.fullname.toUpperCase()}
 

@@ -15,12 +15,16 @@ const parser = new ArgumentParser({
   addHelp: true,
   description: 'Fontello Batch CLI'
 });
-parser.addArgument(['-p', '--path'], {
-  help: 'Source SVG Files Path, e.g., "C:\\Svg Source", C:\\SvgSource',
-  required: true
+parser.addArgument(['-s', '--src'], {
+  help: 'Source SVG Files Path, e.g., "C:\\Svg". default: "_icons"',
+  required: false
+});
+parser.addArgument(['-c', '--config'], {
+  help: 'Path to config file, e.g., "path/conf.json". All paths inside config file are relative to config file dir',
+  required: false
 });
 parser.addArgument(['-n', '--name'], {
-  help: 'Font Name, e.g., Fontello, "My Font"',
+  help: 'Font Name, e.g., "My Font". default value: "untitled"',
   required: false
 });
 parser.addArgument(['-a', '--author'], {
@@ -28,54 +32,63 @@ parser.addArgument(['-a', '--author'], {
   required: false
 });
 parser.addArgument(['-o', '--output'], {
-  help: 'Destination Path to save compiled fonts',
+  help: 'Destination Path to save compiled fonts. default value: "_font"',
   required: false
 });
-parser.addArgument(['-rp', '--removeprefix'], {
-  help: 'Remove Prefix, e.g., "Icon ", "Icon-"',
-  required: false
-});
-parser.addArgument(['-rs', '--removesuffix'], {
-  help: 'Remove Suffix, e.g., " 24px", "-24px"',
-  required: false
-});
-parser.addArgument(['-op', '--outputprefix'], {
-  help: 'CSS Class Prefix, e.g., "google-icon", "your-icon"',
-  required: false
-});
+// parser.addArgument(['-p', '--outputprefix'], {
+//   help: 'CSS Class Prefix, e.g., "google-icon", "your-icon"',
+//   required: false
+// });
 const args = parser.parseArgs();
 
-var allocatedRefCode = 0xe800;
-const svgFilesPath = args.path;
-const dstFilesPath = args.output ?  args.output : "webfonts" ;
+const cfg = {//defaults
+  src: "_icons",
+  output: "_font",
+  name: "untitled",
+};
+
+if (fs.existsSync(args.config)) {
+  const confpath = path.dirname(args.config);// relative path to folder containing config.json
+  //var absoluteConfPath = path.resolve(confpath); // absolute path to folder containing config.json
+
+  Object.assign(cfg,  JSON.parse(fs.readFileSync(args.config, 'utf8')));
+  cfg.src = path.resolve(confpath, cfg.src);
+  cfg.output = path.join(confpath, cfg.output);
+}
+
+if(args.output) cfg.output = args.output;
+if(args.name) cfg.name = args.name;
+if(args.src) cfg.src = args.src;
+
+console.log(cfg);
+
+let allocatedRefCode = 0xe800;
+const svgFilesPath = cfg.src;
+
+const dstFilesPath = cfg.output;
+//const dstFilesPath = args.output ?  args.output : "webfonts" ;
+
 const svgFiles = filterSvgFiles(svgFilesPath);
-var glyphs = [];
+const glyphs = [];
+svgFiles.forEach(createGlyph());
 
-svgFiles.forEach(createGlyph(args.removeprefix, args.removesuffix));
 
-const output = {
-  name: args.name ? args.name : null,
+const clientConfig = {
+  name: cfg.name,
   css_prefix_text: '',
   css_use_suffix: false,
   hinting: false,
   units_per_em: 1000,
   ascent: 850,
-  copyright: args.author
-    ? 'Copyright (C) ' + new Date().getFullYear() + ' by ' + args.author
-    : null,
+  copyright: args.author ? 'Copyright (C) ' + new Date().getFullYear() + ' by ' + args.author: null,
   glyphs: glyphs
 };
 
-const data = {
-  fontId: uid(),
-  config: output
-};
-const builderConfig = fontConfig(data.config, args.outputprefix);
+
 const taskInfo = {
-  fontId: data.fontId,
-  clientConfig: data.config,
-  builderConfig,
-  // tmpDir: path.join(path.resolve(), 'webfonts'),
+  fontId: uid(),
+  clientConfig: clientConfig,
+  builderConfig: fontConfig(clientConfig),
   tmpDir: path.join(path.resolve(), dstFilesPath),
   timestamp: Date.now(),
   result: null
@@ -83,6 +96,9 @@ const taskInfo = {
 
 fontWorker(taskInfo).then(_ => {
   console.log('Font generated successfully!');
+}).catch(o=>{
+  console.log("======== error ========");
+  console.log(o);
 });
 
 function collectGlyphsInfo(clientConfig) {
@@ -127,7 +143,7 @@ function collectGlyphsInfo(clientConfig) {
   return result;
 }
 
-function fontConfig(clientConfig, outputprefix) {
+function fontConfig(clientConfig) {
   if (clientConfig.fullname === 'undefined') {
     delete clientConfig.fullname;
   }
@@ -172,19 +188,14 @@ function fontConfig(clientConfig, outputprefix) {
       css_use_suffix: Boolean(clientConfig.css_use_suffix)
     },
     glyphs: glyphsInfo,
-    fonts_list: [],
-    outputprefix: outputprefix || ''
+    fonts_list: []
   };
 }
 
-function createGlyph(removeprefix, removesuffix) {
+function createGlyph() {
   return function(svgFile) {
     var path = require('path');
-    removeprefix = removeprefix || '';
-    removesuffix = removesuffix || '';
     var glyphName = path.basename(svgFile, '.svg')
-      .replace(removeprefix, '')
-      .replace(removesuffix, '')
       .replace(/\s/g, '-')
       .replace('---', '-')
       .replace('--', '-')

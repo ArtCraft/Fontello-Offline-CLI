@@ -55,7 +55,7 @@ _.forEach(
 module.exports = async function fontWorker(taskInfo) {
   const fontname = taskInfo.builderConfig.font.fontname;
   const files = {
-    config: path.join(taskInfo.tmpDir, 'config.json'),
+    //config: path.join(taskInfo.tmpDir, 'config.json'),
     svg: path.join(taskInfo.tmpDir, 'font', `${fontname}.svg`),
     ttf: path.join(taskInfo.tmpDir, 'font', `${fontname}.ttf`),
     ttfUnhinted: path.join(taskInfo.tmpDir, 'font', `${fontname}-unhinted.ttf`),
@@ -73,8 +73,8 @@ module.exports = async function fontWorker(taskInfo) {
   await fs.promises.mkdir(path.join(taskInfo.tmpDir, 'font'), { recursive: true });
   await fs.promises.mkdir(path.join(taskInfo.tmpDir, 'css'), { recursive: true });
 
-  const configOutput = JSON.stringify(taskInfo.clientConfig, null, '  ');
-  await mz.fs.writeFile(files.config, configOutput, 'utf8');
+  // const configOutput = JSON.stringify(taskInfo.clientConfig, null, '  ');
+  // await mz.fs.writeFile(files.config, configOutput, 'utf8');
   await mz.fs.writeFile(files.svg, svgOutput, 'utf8');
 
   const ttf = svg2ttf(svgOutput, {
