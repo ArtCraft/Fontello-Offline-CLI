@@ -53,8 +53,10 @@ const cfg = {
   css_prefix_text: '',
   css_use_suffix: false,
   hinting: false,
-  units_per_em: 1000,
-  ascent: 850,
+  // units_per_em: 1000,
+  // ascent: 850,
+  units_per_em: 960,
+  ascent: 480,
 };
 
 // read config file data
