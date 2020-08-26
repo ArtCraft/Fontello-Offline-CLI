@@ -9,15 +9,15 @@
 - function unichr(code) { if (code > 0xffff) { code -= 0x10000; surrogate1 = 0xd800 + (code >> 10); surrogate2 = 0xdc00 + (code & 0x3ff); return String.fromCharCode(surrogate1, surrogate2); } else { return String.fromCharCode(code); } }
 - function pad(s) { return s.length === 3 ? '0' + s : s; }
 
-- var i, g, css, hex, chr, ptag
+- var i, g, css_class, hex, chr, ptag
 - for (i in glyphs)
   - g = glyphs[i]
-  - css = meta.css_use_suffix ? g.css + meta.css_prefix_text : meta.css_prefix_text + g.css
+  - css_class = meta.css_use_suffix ? g.css + meta.css_prefix_text : meta.css_prefix_text + g.css
   - hex = '\\' + pad(g.code.toString(16))
   - chr = unichr(g.code)
   - ptag = g.duo ? 'after' : 'before'
   != '\n'
   - if (0xffff < g.code)
-    | .#{css}:#{ptag} { content: '#{chr}'; }
+    | .#{css_class}:#{ptag} { content: '#{chr}'; }
   - else
-    | .#{css}:#{ptag} { content: '#{hex}'; }
+    | .#{css_class}:#{ptag} { content: '#{hex}'; }

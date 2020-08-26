@@ -127,6 +127,9 @@ function processTree(node, ignoredTags, ignoredAttrs, parentTransforms, path) {
     switch (item.nodeName) {
       case 'path':
         d = item.getAttribute('d');
+        // var st = item.getAttribute('style');
+        // console.log(st);
+        // if(st.indexOf("#ff934d")!=-1) return;
         break;
       case 'g':
         break;
@@ -241,7 +244,7 @@ module.exports = function convert(sourceXml) {
   }
 
   var svg = xmlDoc.getElementsByTagName('svg')[0];
-
+  //console.log("start processing svg")
   var processed = processTree(svg, {}, {}, '', '');
 
   var coords = getCoordinates(svg);

@@ -3,8 +3,9 @@
 - if (need_charset)
   | @charset "UTF-8";
   != '\n'
-  | 
-//TODO use same css as google-fonts / material icons does
+  |
+
+- //TODO use same css as google-fonts / material icons does
 - var rnd = Math.floor(Math.random()*100000000);
 | @font-face {
 |   font-family: '#{font.fontname}';
@@ -25,7 +26,7 @@
 |   speak: none;
 |   position: relative;
 |   color: #777;
-|   font-size: 48px;
+|   font-size: #{cfg.default_size}px;
 | 
 |   display: inline-block;
 |   text-decoration: none;

@@ -41,12 +41,23 @@ parser.addArgument(['-o', '--output'], {
 // });
 const args = parser.parseArgs();
 
-const cfg = {//defaults
+//defaults
+const cfg = {
   src: "_icons",
   output: "_font",
   name: "untitled",
+  author: "Unknown Author",
+  preview_size: 48,
+  default_size: 48,
+
+  css_prefix_text: '',
+  css_use_suffix: false,
+  hinting: false,
+  units_per_em: 1000,
+  ascent: 850,
 };
 
+// read config file data
 if (fs.existsSync(args.config)) {
   const confpath = path.dirname(args.config);// relative path to folder containing config.json
   //var absoluteConfPath = path.resolve(confpath); // absolute path to folder containing config.json
@@ -56,11 +67,15 @@ if (fs.existsSync(args.config)) {
   cfg.output = path.join(confpath, cfg.output);
 }
 
+// read cli vars
 if(args.output) cfg.output = args.output;
 if(args.name) cfg.name = args.name;
 if(args.src) cfg.src = args.src;
+if(args.author)  cfg.author = args.author;
 
-console.log(cfg);
+cfg.copyright = 'Copyright © ' + cfg.author;
+cfg.fontname = String(cfg.name).replace(/[^A-Za-z0-9\-_]+/g, '-').toLowerCase();
+
 
 let allocatedRefCode = 0xe800;
 const svgFilesPath = cfg.src;
@@ -72,23 +87,16 @@ const svgFiles = filterSvgFiles(svgFilesPath);
 const glyphs = [];
 svgFiles.forEach(createGlyph());
 
+cfg.glyphs = glyphs;
 
-const clientConfig = {
-  name: cfg.name,
-  css_prefix_text: '',
-  css_use_suffix: false,
-  hinting: false,
-  units_per_em: 1000,
-  ascent: 850,
-  copyright: args.author ? 'Copyright (C) ' + new Date().getFullYear() + ' by ' + args.author: null,
-  glyphs: glyphs
-};
+
+// console.log(cfg);
 
 
 const taskInfo = {
   fontId: uid(),
-  clientConfig: clientConfig,
-  builderConfig: fontConfig(clientConfig),
+  cfg: cfg,
+  builderConfig: fontConfig(),
   tmpDir: path.join(path.resolve(), dstFilesPath),
   timestamp: Date.now(),
   result: null
@@ -101,11 +109,11 @@ fontWorker(taskInfo).then(_ => {
   console.log(o);
 });
 
-function collectGlyphsInfo(clientConfig) {
+function collectGlyphsInfo() {
   const result = [];
-  const scale = clientConfig.units_per_em / 1000;
+  const scale = cfg.units_per_em / 1000;
 
-  clientConfig.glyphs.forEach(glyph => {
+  cfg.glyphs.forEach(glyph => {
     const svgpath = require('svgpath');
     let sp, duo=false;
 
@@ -114,7 +122,7 @@ function collectGlyphsInfo(clientConfig) {
 
       sp = svgpath(glyph.svg.path)
         .scale(scale, -scale)
-        .translate(0, clientConfig.ascent)
+        .translate(0, cfg.ascent)
         .abs()
         .round(0)
         .rel();
@@ -143,51 +151,26 @@ function collectGlyphsInfo(clientConfig) {
   return result;
 }
 
-function fontConfig(clientConfig) {
-  if (clientConfig.fullname === 'undefined') {
-    delete clientConfig.fullname;
-  }
-  if (clientConfig.copyright === 'undefined') {
-    delete clientConfig.copyright;
-  }
-
-  clientConfig.css_use_suffix = Boolean(clientConfig.css_use_suffix);
-  clientConfig.css_prefix_text = clientConfig.css_prefix_text || '';
-  clientConfig.hinting = clientConfig.hinting !== false;
-  clientConfig.units_per_em = +clientConfig.units_per_em || 1000;
-  clientConfig.ascent = +clientConfig.ascent || 850;
-
-  let fontname;
-  if (!_.isEmpty(clientConfig.name)) {
-    fontname = String(clientConfig.name).replace(/[^A-Za-z0-9\-_]+/g, '-').toLowerCase();
-  } else {
-    fontname = 'fontello';
-  }
-
-  const glyphsInfo = collectGlyphsInfo(clientConfig);
-
-  const defaultCopyright =
-    'Copyright (C) ' +
-    new Date().getFullYear() +
-    ' by original authors @ fontello.com';
+function fontConfig() {
 
   return {
+    cfg: cfg,
     font: {
-      fontname,
-      fullname: clientConfig.name,
-      familyname: clientConfig.name,
-      copyright: clientConfig.copyright || defaultCopyright,
-      ascent: clientConfig.ascent,
-      descent: clientConfig.ascent - clientConfig.units_per_em,
+      fontname: cfg.fontname,
+      fullname: cfg.name,
+      familyname: cfg.name,
+      copyright: cfg.copyright,
+      ascent: cfg.ascent,
+      descent: cfg.ascent - cfg.units_per_em,
       weight: 400
     },
-    hinting: clientConfig.hinting !== false,
+    hinting: cfg.hinting !== false,
     meta: {
       columns: 4,
-      css_prefix_text: clientConfig.css_prefix_text || '',
-      css_use_suffix: Boolean(clientConfig.css_use_suffix)
+      css_prefix_text: cfg.css_prefix_text || '',
+      css_use_suffix: Boolean(cfg.css_use_suffix)
     },
-    glyphs: glyphsInfo,
+    glyphs: collectGlyphsInfo(),
     fonts_list: []
   };
 }
@@ -211,14 +194,14 @@ function createGlyph() {
       .translate(-result.x, -result.y)
       .scale(scale)
       .abs()
-      .round(1)
+      .round(0)
       .toString();
     if (svgPath === '') {
       console.error(svgFile + ' has no path data!');
       return;
     }
     glyphs.push({
-      uid: uid(),
+      //uid: uid(),
       css: glyphName,
       code: allocatedRefCode++,
       src: 'custom_icons',
@@ -226,8 +209,7 @@ function createGlyph() {
       svg: {
         path: svgPath,
         width: 1000
-      },
-      search: [glyphName]
+      }
     });
   };
 }
