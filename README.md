@@ -8,16 +8,17 @@ Forked from [Fontello-Offline-CLI](https://github.com/luchenatwork/Fontello-Offl
 
 ## Usage
 ```
-$ node fg --help
-$ node fg --version
-$ node fg -s "src/path" -n thefontname -a "font author" -o "output/path"
+$ node icon-font-generator-cli --version
+$ node icon-font-generator-cli --help
+$ node icon-font-generator-cli -s "src/path" -n thefontname -a "font author" -o "output/path"
+$ node icon-font-generator-cli -c conf.json -w
 ```
 
 ## Font development
 ```bash
-md projet
-cd project  
-npm init
+md [project_name]
+cd [project_name]
+npm init -y
 npm i -D ArtCraft/Icon-Font-Generator-CLI
 md _icons
 touch conf.json
@@ -39,8 +40,8 @@ and add following to package.json
 ```json
   ...
   "scripts": {
-    "watch": "node fg -c _test/conf.json -w",
-    "generate": "node fg -c _test/conf.json"
+    "watch": "node node_modules/icon-font-generator-cli -c conf.json -w",
+    "build": "node node_modules/icon-font-generator-cli -c conf.json"
   },
   ....
 ```

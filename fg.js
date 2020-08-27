@@ -107,7 +107,7 @@ if( args.watch != "no"){
 
   // watch svg files and templates
   fs.watch(svgFilesPath, watcherEventHandler);
-  fs.watch('templates', ()=>{ setTimeout(watcherEventHandler, 500);});
+  fs.watch(path.join(__dirname, 'templates'),watcherEventHandler);
 
   function watcherEventHandler(eventType, filename) {
     if(!workining){
