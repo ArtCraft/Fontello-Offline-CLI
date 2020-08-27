@@ -12,3 +12,45 @@ $ node fg --help
 $ node fg --version
 $ node fg -s "src/path" -n thefontname -a "font author" -o "output/path"
 ```
+
+## Font development
+```bash
+md projet
+cd project  
+npm init
+npm i -D ArtCraft/Icon-Font-Generator-CLI
+md _icons
+touch conf.json
+```
+
+conf.json
+```json
+{
+  "name": "icon",
+  "src": "_icons",
+  "output": "_output",
+  "preview_size": 24,
+  "default_size": 24,
+  "author": "Unknown"
+}
+```
+
+and add following to package.json
+```json
+  ...
+  "scripts": {
+    "watch": "node fg -c _test/conf.json -w",
+    "generate": "node fg -c _test/conf.json"
+  },
+  ....
+```
+
+put svg files under `_icons` folder
+
+and run `npm run watch`
+
+This will regenerate a font and open a preview page.
+And each time you change something in `_icons` folder font going to be regenerated
+and preview reloaded.
+
+Enjoy.

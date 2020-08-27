@@ -3,9 +3,7 @@
 - if (need_charset)
   | @charset "UTF-8";
   != '\n'
-  |
 
-- // TODO use same css as google-fonts / material icons does
 - var rnd = Math.floor(Math.random()*100000000);
 | @font-face {
 |   font-family: '#{font.fontname}';
@@ -25,7 +23,7 @@
 |   font-weight: normal;
 |   speak: none;
 |   position: relative;
-|   color: #ff7400;
+|   color: #515151;
 |   font-size: #{cfg.default_size}px;
 | 
 |   display: inline-block;
@@ -40,4 +38,4 @@
 |   -webkit-font-smoothing: antialiased;
 |   -moz-osx-font-smoothing: grayscale;
 | }
-| .#{font.fontname}::after { top: 0; left: 0; position: absolute; color: #777777;}
+| .#{font.fontname}::after { top: 0; left: 0; position: absolute; color: #ff7400;}

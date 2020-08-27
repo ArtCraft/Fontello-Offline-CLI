@@ -18,41 +18,47 @@ const SVG_FONT_TEMPLATE = _.template(
   fs.readFileSync(path.join(TEMPLATES_DIR, 'svg.tpl'), 'utf8')
 );
 
-_.forEach(
-  {
-    'demo.pug': 'font-icons-preview.html',
-    'list.pug': 'font-icons-list.csv',
-    'css/base.pug': 'css/${FONTNAME}-base.css',
-    'css/codes.pug': 'css/${FONTNAME}-codes.css'
-  },
-  (outputName, inputName) => {
-    const inputFile = path.join(TEMPLATES_DIR, inputName);
-    const inputData = fs.readFileSync(inputFile, 'utf8');
-    let outputData;
 
-    switch (path.extname(inputName)) {
-      case '.pug':
-        outputData = pug.compile(inputData, {
-          pretty: true,
-          filename: inputFile,
-          filters: [require('jstransformer-stylus')]
-        });
-        break;
+function compileTemplates(){
+  _.forEach(
+    {
+      'demo.pug': 'font-icons-preview.html',
+      'list.pug': 'font-icons-list.csv',
+      'css-base.pug': 'css/${FONTNAME}-base.css',
+      'css-codes.pug': 'css/${FONTNAME}-codes.css'
+    },
+    (outputName, inputName) => {
+      const inputFile = path.join(TEMPLATES_DIR, inputName);
+      const inputData = fs.readFileSync(inputFile, 'utf8');
+      let outputData;
 
-      case '.tpl':
-        outputData = _.template(inputData);
-        break;
+      switch (path.extname(inputName)) {
+        case '.pug':
+          outputData = pug.compile(inputData, {
+            pretty: true,
+            filename: inputFile,
+            filters: [require('jstransformer-stylus')]
+          });
+          break;
 
-      default:
-        outputData = () => inputData;
-        break;
+        case '.tpl':
+          outputData = _.template(inputData);
+          break;
+
+        default:
+          outputData = () => inputData;
+          break;
+      }
+
+      TEMPLATES[outputName] = outputData;
     }
-
-    TEMPLATES[outputName] = outputData;
-  }
-);
+  );
+}
 
 module.exports = async function fontWorker(taskInfo) {
+
+  compileTemplates();
+
   const fontname = taskInfo.builderConfig.font.fontname;
   const files = {
     //config: path.join(taskInfo.tmpDir, 'config.json'),

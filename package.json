@@ -1,13 +1,17 @@
 {
   "name": "icon-font-generator-cli",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "fontello based icon font generator cli",
   "main": "fg.js",
   "bin": {
-    "fontello-offline-cli": "fg.js"
+    "fg": "fg.js"
   },
   "scripts": {
-    "build": "node fg -c _test/conf.json"
+    "dev": "concurrently --kill-others \"npm run synch\" \"npm run watch\"",
+    "web-server": "node node_modules/http-server/bin/http-server -p 8877  _test/_output/ -o font-icons-preview.html",
+    "watch": "node fg -c _test/conf.json -w",
+    "generate": "node fg -c _test/conf.json",
+    "synch": "browser-sync start -s _test/_output/ -w --index font-icons-preview.html -w 'css/*.css'"
   },
   "repository": {
     "type": "git",
@@ -29,6 +33,7 @@
     "argparse": "^1.0.10",
     "base64-js": "^1.3.1",
     "bluebird": "^3.5.5",
+    "browser-sync": "^2.26.12",
     "jstransformer-stylus": "^1.5.0",
     "lodash": "^4.17.15",
     "mz": "^2.7.0",

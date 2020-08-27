@@ -35,17 +35,20 @@ parser.addArgument(['-o', '--output'], {
   help: 'Destination Path to save compiled fonts. default value: "_font"',
   required: false
 });
+parser.addArgument(['-w', '--watch'], {
+  help: 'watch icons folder for changes',
+  required: false, nargs: '?',  defaultValue: "no"});
 
 const args = parser.parseArgs();
 
 //defaults
 const cfg = {
   src: "_icons",
-  output: "_font",
+  output: "_output",
   name: "untitled",
   author: "Unknown Author",
-  preview_size: 48,
-  default_size: 48,
+  preview_size: 24,
+  default_size: 24,
 
   css_prefix_text: '',
   css_use_suffix: false,
@@ -53,7 +56,7 @@ const cfg = {
   // units_per_em: 1000,
   // ascent: 850,
   units_per_em: 960,
-  ascent: 480,
+  ascent: 480
 };
 
 // read config file data
@@ -75,40 +78,71 @@ if(args.author)  cfg.author = args.author;
 cfg.copyright = 'Copyright © ' + cfg.author;
 cfg.fontname = String(cfg.name).replace(/[^A-Za-z0-9\-_]+/g, '-').toLowerCase();
 
-
+let glyphs;
 let allocatedRefCode = 0xe800;
 const svgFilesPath = cfg.src;
-
 const dstFilesPath = cfg.output;
 //const dstFilesPath = args.output ?  args.output : "webfonts" ;
 
-const svgFiles = filterSvgFiles(svgFilesPath);
-const glyphs = [];
-svgFiles.forEach(createGlyph());
 
-cfg.glyphs = glyphs;
+generateFont();
+
+// console.log( args.hasOwnProperty('watch'));
+if( args.watch != "no"){
+  let workining = false;
+  console.log( "Starting BrowserSync..." );
+  // Require Browsersync
+  const browserSync = require("browser-sync").create();
+
+  // Run Browsersync with server config
+  browserSync.init({
+    server: dstFilesPath,
+    index: 'font-icons-preview.html',
+    port: 8878,
+    logLevel: "silent"
+  });
+
+  console.log( "Watching SVG files..." );
 
 
-// console.log(cfg);
-// console.log(glyphs);
+  // watch svg files and templates
+  fs.watch(svgFilesPath, watcherEventHandler);
+  fs.watch('templates', ()=>{ setTimeout(watcherEventHandler, 500);});
 
+  function watcherEventHandler(eventType, filename) {
+    if(!workining){
+      workining = true;
+      setTimeout(()=> { workining=false; },500);
+      console.log(" -" + eventType + " ("+filename +")");
+      generateFont();
+      browserSync.reload();
+    }
+  }
 
-const taskInfo = {
-  fontId: uid(),
-  cfg: cfg,
-  builderConfig: fontConfig(),
-  tmpDir: path.join(path.resolve(), dstFilesPath),
-  timestamp: Date.now(),
-  result: null
-};
+}
 
-fontWorker(taskInfo).then(_ => {
-  console.log('Font generated successfully!');
-}).catch(o=>{
-  console.log("======== error ========");
-  console.log(o);
-});
+function generateFont(){
+  const svgFiles = filterSvgFiles(svgFilesPath);
+  glyphs = [];
+  svgFiles.forEach(createGlyph());
+  cfg.glyphs = glyphs;
 
+  const taskInfo = {
+    fontId: uid(),
+    cfg: cfg,
+    builderConfig: fontConfig(),
+    tmpDir: path.join(path.resolve(), dstFilesPath),
+    timestamp: Date.now(),
+    result: null
+  };
+
+  fontWorker(taskInfo).then(_ => {
+    console.log('Font generated successfully!');
+  }).catch(o=>{
+    console.log("======== error ========");
+    console.log(o);
+  });
+}
 
 
 function fontConfig() {
