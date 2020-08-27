@@ -6,6 +6,9 @@
   "bin": {
     "fontello-offline-cli": "fg.js"
   },
+  "scripts": {
+    "build": "node fg -c _test/conf.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://git@github.com:ArtCraft/Icon-Font-Generator-CLI.git"
