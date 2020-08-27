@@ -15,7 +15,7 @@
   - css_class = meta.css_use_suffix ? g.css + meta.css_prefix_text : meta.css_prefix_text + g.css
   - hex = '\\' + pad(g.code.toString(16))
   - chr = unichr(g.code)
-  - ptag = g.duo ? 'after' : 'before'
+  - ptag = g.isLayer2 ? 'after' : 'before'
   != '\n'
   - if (0xffff < g.code)
     | .#{css_class}:#{ptag} { content: '#{chr}'; }
