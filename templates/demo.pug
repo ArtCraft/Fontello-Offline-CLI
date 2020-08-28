@@ -4,7 +4,7 @@ html
     meta(charset='UTF-8')
 
     != '<style>'
-    - var boxWidth = Math.max(cfg.preview_size+20, 90)
+    - var boxWidth = Math.max(cfg.preview_size+20, 50)
     :stylus
       body
         font-family "Open Sans", sans-serif
@@ -20,16 +20,20 @@ html
          margin-top 20px
 
       .icon
-        border solid 1px #eee
-        margin 3px
-        padding 10px
+        border solid 5px #fff
+        border-radius 4px
+        box-shadow 0 0 0 1px #eee
+        margin 2px
         display inline-block
         text-align center
+        overflow-x hidden
+        white-space:nowrap
         div
           font-size 10px
-    | .icon{ width:#{boxWidth}px; }
+
+    | .icon{ min-width:#{boxWidth}px;  }
     | i.#{font.fontname}{font-size: #{cfg.preview_size}px; }
-    | i.x2.#{font.fontname}{font-size: #{cfg.preview_size*2}px; }
+    | #x2:checked ~ .icon i.#{font.fontname}{font-size: #{cfg.preview_size*2}px; }
     != '</style>'
 
     | <link rel="stylesheet" href="css/#{font.fontname}-base.css">
@@ -38,7 +42,11 @@ html
   body
     .container
       header
-        h1 [#{font.fullname.toUpperCase()}]
+        h1 #{font.fullname.toUpperCase()}
+
+      input(id='x2', type='checkbox')
+      label(for='x2' style='user-select: none;') 2x preview
+      .sep(style='padding:20px 0;')
 
       - var i, g, css_class, code
       - function pad(s) { return s.length === 3 ? '0' + s : s; }
@@ -50,7 +58,8 @@ html
         - code = pad(g.code.toString(16))
         .icon
           i(class=font.fontname class=css_class)
-          i.x2(class=font.fontname class=css_class)
+          -// if( cfg.x2_preview )
+          -//  i.x2(class=font.fontname class=css_class)
           -//.css_name .#{font.fontname}.#{css_class}
           -//.char_code 0x#{code}
           .css_name #{css_class}

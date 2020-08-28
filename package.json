@@ -4,14 +4,11 @@
   "description": "fontello based icon font generator cli",
   "main": "fg.js",
   "bin": {
-    "fg": "fg.js"
+    "fg": ".js"
   },
   "scripts": {
-    "dev": "concurrently --kill-others \"npm run synch\" \"npm run watch\"",
-    "web-server": "node node_modules/http-server/bin/http-server -p 8877  _test/_output/ -o font-icons-preview.html",
     "watch": "node fg -c _test/conf.json -w",
-    "generate": "node fg -c _test/conf.json",
-    "synch": "browser-sync start -s _test/_output/ -w --index font-icons-preview.html -w 'css/*.css'"
+    "generate": "node fg -c _test/conf.json"
   },
   "repository": {
     "type": "git",

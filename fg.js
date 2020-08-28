@@ -87,14 +87,14 @@ const dstFilesPath = cfg.output;
 
 generateFont();
 
-// console.log( args.hasOwnProperty('watch'));
 if( args.watch != "no"){
   let workining = false;
   console.log( "Starting BrowserSync..." );
   // Require Browsersync
   const browserSync = require("browser-sync").create();
 
-  // Run Browsersync with server config
+  // Run Browsersync server
+  // https://www.browsersync.io/docs/options#option-ghostMode
   browserSync.init({
     server: dstFilesPath,
     index: 'font-icons-preview.html',
@@ -103,7 +103,6 @@ if( args.watch != "no"){
   });
 
   console.log( "Watching SVG files..." );
-
 
   // watch svg files and templates
   fs.watch(svgFilesPath, watcherEventHandler);
@@ -114,8 +113,15 @@ if( args.watch != "no"){
       workining = true;
       setTimeout(()=> { workining=false; },500);
       console.log(" -" + eventType + " ("+filename +")");
-      generateFont();
-      browserSync.reload();
+      try{
+        generateFont();
+        setTimeout(()=> { browserSync.reload(); },400);
+      }catch (e) {
+        console.log(e);
+        setTimeout(()=>{
+          watcherEventHandler(eventType, filename)
+        },1000 );
+      }
     }
   }
 
