@@ -1,10 +1,10 @@
 {
   "name": "icon-font-generator-cli",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "fontello based icon font generator cli",
   "main": "fg.js",
   "bin": {
-    "fg": ".js"
+    "fg": "fg.js"
   },
   "scripts": {
     "watch": "node fg -c _test/conf.json -w",
